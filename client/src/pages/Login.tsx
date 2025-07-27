@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,10 +20,12 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [locationAccess, setLocationAccess] = useState(false);
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     initAnimations();
@@ -71,41 +73,81 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Mock Google login
-    toast({
-      title: "Google Login",
-      description: "Google authentication would be integrated here.",
-    });
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await loginWithGoogle(selectedRole);
+      
+      toast({
+        title: "Login Successful",
+        description: `Welcome back! Redirecting to your ${selectedRole} dashboard.`,
+      });
+
+      // Redirect based on role or intended destination
+      const from = location.state?.from?.pathname;
+      const redirectPath = from || (selectedRole === 'supplier' ? '/supplier-dashboard' : '/vendor-dashboard');
+      navigate(redirectPath, { replace: true });
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Failed to sign in with Google. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock user data - in real app, this would come from API
-    const user = {
-      id: '1',
-      email: data.email,
-      role: data.role,
-      name: 'John Doe',
-      location: locationAccess ? 'Current Location' : undefined,
-    };
+    try {
+      await login(data.email, data.password, data.role);
+      
+      // If supplier, update location in backend
+      if (data.role === 'supplier' && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          try {
+            // Get supplier _id from localStorage or backend (assumes login sets it)
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user && user.uid) {
+              await fetch('/api/suppliers/location', {
+                method: 'PATCH',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${await user.getIdToken()}`
+                },
+                body: JSON.stringify({
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                })
+              });
+            }
+          } catch (e) {
+            // Ignore location update errors for now
+            console.log('Location update failed:', e);
+          }
+        });
+      }
 
-    login(user);
-    
-    toast({
-      title: "Login Successful",
-      description: `Welcome back! Redirecting to your ${data.role} dashboard.`,
-    });
+      toast({
+        title: "Login Successful",
+        description: `Welcome back! Redirecting to your ${data.role} dashboard.`,
+      });
 
-    // Redirect based on role
-    const redirectPath = data.role === 'supplier' ? '/supplier-dashboard' : '/vendor-dashboard';
-    navigate(redirectPath);
-    
-    setIsLoading(false);
+      // Redirect based on role or intended destination
+      const from = location.state?.from?.pathname;
+      const redirectPath = from || (data.role === 'supplier' ? '/supplier-dashboard' : '/vendor-dashboard');
+      navigate(redirectPath, { replace: true });
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid email or password. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -136,10 +178,20 @@ const Login: React.FC = () => {
                 variant="outline" 
                 className="w-full" 
                 onClick={handleGoogleLogin}
+                disabled={isGoogleLoading}
                 type="button"
               >
-                <Mail className="w-4 h-4 mr-2" />
-                Continue with Google
+                {isGoogleLoading ? (
+                  <div className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    Signing In...
+                  </div>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Continue with Google
+                  </>
+                )}
               </Button>
 
               <div className="relative">

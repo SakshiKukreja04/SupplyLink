@@ -17,13 +17,21 @@ interface SignUpFormData {
   password: string;
   confirmPassword: string;
   phone: string;
+  name: string;
   role: UserRole;
+}
+
+interface LocationData {
+  latitude: number;
+  longitude: number;
 }
 
 const SignUp: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [locationAccess, setLocationAccess] = useState(false);
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,6 +67,11 @@ const SignUp: React.FC = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          const locationData: LocationData = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          setLocationData(locationData);
           setLocationAccess(true);
           toast({
             title: "Location Access Granted",
@@ -82,41 +95,97 @@ const SignUp: React.FC = () => {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    // Mock Google signup
-    toast({
-      title: "Google Sign Up",
-      description: "Google authentication would be integrated here.",
-    });
+  const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true);
+    try {
+      // For Google signup, we need to prompt for additional information
+      // since Google doesn't provide phone number
+      if (selectedRole === 'vendor') {
+        toast({
+          title: "Additional Information Required",
+          description: "Please use email signup for vendors to provide complete information including phone number.",
+          variant: "destructive",
+        });
+        setIsGoogleLoading(false);
+        return;
+      }
+      
+      await loginWithGoogle(selectedRole);
+      
+      toast({
+        title: "Account Created Successfully",
+        description: `Welcome to SupplyLink! Redirecting to your ${selectedRole} dashboard.`,
+      });
+
+      // Redirect based on role
+      const redirectPath = selectedRole === 'supplier' ? '/supplier-dashboard' : '/vendor-dashboard';
+      navigate(redirectPath, { replace: true });
+    } catch (error: any) {
+      toast({
+        title: "Sign Up Failed",
+        description: error.message || "Failed to sign up with Google. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Create user data
-    const userData = {
-      email: data.email,
-      role: data.role,
-      name: 'New User',
-      phone: data.phone,
-      location: locationAccess ? 'Current Location' : undefined,
-    };
+    try {
+      // Create user data for Firebase
+      const userData = {
+        role: data.role,
+        name: data.name,
+        phone: data.phone,
+        location: locationData || undefined,
+      };
 
-    signup(userData);
-    
-    toast({
-      title: "Account Created Successfully",
-      description: `Welcome to SupplyLink! Redirecting to your ${data.role} dashboard.`,
-    });
+      await signup(data.email, data.password, userData);
+      
+      // If supplier, update location in backend
+      if (data.role === 'supplier' && locationData) {
+        try {
+          // Get supplier _id from localStorage or backend (assumes signup sets it)
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          if (user && user.uid) {
+            await fetch('/api/suppliers/location', {
+              method: 'PATCH',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${await user.getIdToken()}`
+              },
+              body: JSON.stringify({
+                lat: locationData.latitude,
+                lng: locationData.longitude
+              })
+            });
+          }
+        } catch (e) {
+          // Ignore location update errors for now
+          console.log('Location update failed:', e);
+        }
+      }
 
-    // Redirect based on role
-    const redirectPath = data.role === 'supplier' ? '/supplier-dashboard' : '/vendor-dashboard';
-    navigate(redirectPath);
-    
-    setIsLoading(false);
+      toast({
+        title: "Account Created Successfully",
+        description: `Welcome to SupplyLink! Redirecting to your ${data.role} dashboard.`,
+      });
+
+      // Redirect based on role
+      const redirectPath = data.role === 'supplier' ? '/supplier-dashboard' : '/vendor-dashboard';
+      navigate(redirectPath, { replace: true });
+    } catch (error: any) {
+      toast({
+        title: "Sign Up Failed",
+        description: error.message || "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -147,10 +216,20 @@ const SignUp: React.FC = () => {
                 variant="outline" 
                 className="w-full" 
                 onClick={handleGoogleSignUp}
+                disabled={isGoogleLoading}
                 type="button"
               >
-                <Mail className="w-4 h-4 mr-2" />
-                Continue with Google
+                {isGoogleLoading ? (
+                  <div className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    Creating Account...
+                  </div>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Continue with Google
+                  </>
+                )}
               </Button>
 
               <div className="relative">
@@ -164,6 +243,27 @@ const SignUp: React.FC = () => {
 
               {/* Sign Up Form */}
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                {/* Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    className="focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+                    {...register('name', {
+                      required: 'Full name is required',
+                      minLength: {
+                        value: 2,
+                        message: 'Name must be at least 2 characters',
+                      },
+                    })}
+                  />
+                  {errors.name && (
+                    <p className="text-sm text-destructive">{errors.name.message}</p>
+                  )}
+                </div>
+
                 {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -277,6 +377,11 @@ const SignUp: React.FC = () => {
                     <MapPin className="w-4 h-4 mr-2" />
                     {locationAccess ? 'Location Granted' : 'Allow Location Access'}
                   </Button>
+                  {locationData && (
+                    <p className="text-xs text-muted-foreground">
+                      Location: {locationData.latitude.toFixed(6)}, {locationData.longitude.toFixed(6)}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     Help us connect you with nearby {selectedRole === 'supplier' ? 'vendors' : 'suppliers'}
                   </p>

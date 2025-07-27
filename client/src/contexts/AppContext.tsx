@@ -67,48 +67,8 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Mock data
-const mockSuppliers: Supplier[] = [
-  {
-    id: '1',
-    name: 'Fresh Farms Co.',
-    email: 'contact@freshfarms.com',
-    phone: '+1-234-567-8901',
-    rating: 4.8,
-    reviews: 156,
-    location: 'California, USA',
-    items: [
-      { id: '1', name: 'Organic Tomatoes', price: 3.50, category: 'Vegetables', stock: 100, supplierId: '1' },
-      { id: '2', name: 'Fresh Carrots', price: 2.25, category: 'Vegetables', stock: 75, supplierId: '1' },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Tech Components Ltd.',
-    email: 'sales@techcomponents.com',
-    phone: '+1-234-567-8902',
-    rating: 4.6,
-    reviews: 89,
-    location: 'Texas, USA',
-    items: [
-      { id: '3', name: 'Arduino Uno', price: 25.99, category: 'Electronics', stock: 50, supplierId: '2' },
-      { id: '4', name: 'Raspberry Pi 4', price: 75.00, category: 'Electronics', stock: 30, supplierId: '2' },
-    ],
-  },
-  {
-    id: '3',
-    name: 'Quality Steel Works',
-    email: 'orders@steelworks.com',
-    phone: '+1-234-567-8903',
-    rating: 4.9,
-    reviews: 203,
-    location: 'Ohio, USA',
-    items: [
-      { id: '5', name: 'Steel Rods', price: 45.00, category: 'Materials', stock: 200, supplierId: '3' },
-      { id: '6', name: 'Aluminum Sheets', price: 32.50, category: 'Materials', stock: 150, supplierId: '3' },
-    ],
-  },
-];
+// Real data will be fetched from API
+const mockSuppliers: Supplier[] = [];
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>(mockSuppliers);
