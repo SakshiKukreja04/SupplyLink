@@ -23,26 +23,21 @@ const server = createServer(app);
 const PORT = process.env.PORT || 5000;
 
 // === CORS CONFIGURATION ===
-const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
-  'http://localhost:8080',
-  'http://localhost:8082',
-  'https://supply-link-git-main-sakshi-kukrejas-projects.vercel.app',
-  'https://supply-link.vercel.app',
-  'https://supply-link-git-*.vercel.app'
-];
-
+// Allow all origins for production deployment
 app.use(cors({
-  origin: allowedOrigins,
+  origin: true, // Allow all origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// === CORS PREFLIGHT HANDLER ===
+app.options('*', cors()); // Enable pre-flight for all routes
 
 // === SOCKET.IO SETUP ===
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: true, // Allow all origins
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
   }
