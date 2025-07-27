@@ -3,6 +3,11 @@
   "outputDirectory": "client/dist",
   "installCommand": "cd client && npm install",
   "framework": "vite",
+  "build": {
+    "env": {
+      "NPM_FLAGS": "--legacy-peer-deps"
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",
