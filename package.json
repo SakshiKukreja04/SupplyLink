@@ -1,0 +1,18 @@
+{
+  "name": "supplylink",
+  "version": "1.0.0",
+  "description": "SupplyLink - Supply Chain Management Platform",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd client && npm run preview"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
