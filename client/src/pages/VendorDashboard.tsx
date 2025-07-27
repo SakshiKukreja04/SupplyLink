@@ -478,8 +478,8 @@ const VendorDashboard: React.FC = () => {
                 console.error('Payment verification JSON parsing error:', parseError);
                 throw new Error(`Payment verification error: ${parseError.message}`);
               }
-              
-              toast({
+    
+    toast({
                 title: "Payment Successful! 🎉",
                 description: `Payment of ₹${order.totalAmount} processed successfully. Payment ID: ${response.razorpay_payment_id}`,
               });
@@ -577,8 +577,8 @@ const VendorDashboard: React.FC = () => {
                   onLocationUpdate={(locationData) => {
                     console.log('Vendor location updated:', locationData);
                   }}
-                />
-              </div>
+                  />
+                </div>
               
               <div className="lg:col-span-2">
                 <NearbySuppliersMap 
@@ -588,12 +588,12 @@ const VendorDashboard: React.FC = () => {
                     setShowSupplierDetails(true);
                   }}
                 />
-              </div>
-            </div>
+                          </div>
+                        </div>
 
             {/* Search Results */}
             {suppliers.length > 0 && (
-              <div>
+                      <div>
                 <h2 className="text-xl font-semibold mb-4">Your Personalized Suppliers</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {suppliers.map((supplier) => (
@@ -603,8 +603,8 @@ const VendorDashboard: React.FC = () => {
                       onSelectSupplier={handleSelectSupplier}
                     />
                   ))}
-                </div>
-              </div>
+                        </div>
+                      </div>
             )}
 
             {suppliers.length === 0 && !loading && (
@@ -620,13 +620,13 @@ const VendorDashboard: React.FC = () => {
 
           <TabsContent value="orders" className="space-y-6">
             <Card>
-              <CardHeader>
+                  <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="w-5 h-5" />
                   My Orders
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
+                  </CardHeader>
+                  <CardContent>
                 {orders.length === 0 ? (
                   <div className="text-center py-8">
                     <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -636,7 +636,7 @@ const VendorDashboard: React.FC = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                    <div className="space-y-4">
                     {orders.map((order) => (
                       <Card key={order._id} className="p-4">
                         <div className="flex items-start justify-between">
@@ -679,7 +679,7 @@ const VendorDashboard: React.FC = () => {
                                     Supplier: {order.supplier.businessName}
                                   </p>
                                 )}
-                              </div>
+                          </div>
                               
                               {/* Order Items */}
                               <div>
@@ -689,17 +689,17 @@ const VendorDashboard: React.FC = () => {
                                     <div key={index} className="flex justify-between text-xs">
                                       <span>{item.itemName} x {item.quantity} {item.unit}</span>
                                       <span className="font-medium">₹{item.totalPrice}</span>
-                                    </div>
-                                  ))}
+                        </div>
+                      ))}
                                   {order.items.length > 3 && (
                                     <p className="text-xs text-muted-foreground">
                                       +{order.items.length - 3} more items
                                     </p>
                                   )}
                                 </div>
-                              </div>
-                            </div>
-                            
+                    </div>
+              </div>
+
                             {/* Status-specific information */}
                             {order.status === 'approved' && (
                               <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
@@ -726,7 +726,7 @@ const VendorDashboard: React.FC = () => {
                                 <p className="text-xs text-blue-600 mt-1">
                                   Your payment has been received. The supplier is now processing your order.
                                 </p>
-                              </div>
+                      </div>
                             )}
                             
                             {order.status === 'dispatched' && (
@@ -742,8 +742,8 @@ const VendorDashboard: React.FC = () => {
                                 </p>
                               </div>
                             )}
-                          </div>
-                          
+                        </div>
+                        
                           <div className="flex flex-col gap-2 ml-4">
                             {order.status === 'approved' && (
                               <Button
@@ -793,10 +793,10 @@ const VendorDashboard: React.FC = () => {
                         </div>
                       </Card>
                     ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
           </TabsContent>
 
           <TabsContent value="cart" className="space-y-6">
@@ -811,7 +811,7 @@ const VendorDashboard: React.FC = () => {
                       <p className="text-sm text-green-600">
                         You have {orders.filter(order => order.status === 'approved').length} approved order(s) waiting for payment.
                       </p>
-                    </div>
+              </div>
                     <Button
                       size="sm"
                       className="bg-green-600 hover:bg-green-700"
@@ -820,7 +820,7 @@ const VendorDashboard: React.FC = () => {
                       <DollarSign className="h-4 w-4 mr-2" />
                       View Orders
                     </Button>
-                  </div>
+            </div>
                 </CardContent>
               </Card>
             )}

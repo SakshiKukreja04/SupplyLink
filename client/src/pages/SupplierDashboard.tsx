@@ -50,10 +50,10 @@ interface SupplierProfile {
   availableItems?: Array<{
     name: string;
     description: string;
-    price: number;
+  price: number;
     quantity: number;
     unit: string;
-    category: string;
+  category: string;
     isAvailable: boolean;
     minimumOrderQuantity: number;
     deliveryTime: number;
@@ -184,7 +184,7 @@ const SupplierDashboard: React.FC = () => {
             category: data.data.category || '',
             productCategories: data.data.productCategories || []
           }));
-          toast({
+    toast({
             title: "Profile Updated",
             description: "Your profile has been updated in real-time.",
           });
@@ -299,7 +299,7 @@ const SupplierDashboard: React.FC = () => {
         });
         
         // Show notification
-        toast({
+      toast({
           title: "New Review Received! ⭐",
           description: `${data.review.vendorName} left a ${data.review.rating}-star review`,
           duration: 5000
@@ -426,7 +426,7 @@ const SupplierDashboard: React.FC = () => {
     try {
       // Validate required fields
       if (!formData.businessName || formData.businessName.trim() === '') {
-        toast({
+    toast({
           title: "Validation Error",
           description: "Business name is required",
           variant: "destructive"
@@ -542,7 +542,7 @@ const SupplierDashboard: React.FC = () => {
             material: data.material
           });
           
-          toast({
+    toast({
             title: "Material Added",
             description: "New material has been added successfully.",
           });
@@ -818,7 +818,7 @@ const SupplierDashboard: React.FC = () => {
   };
 
   if (loading) {
-    return (
+  return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
@@ -861,13 +861,13 @@ const SupplierDashboard: React.FC = () => {
                     <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
-                    </Button>
+                  </Button>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {isEditing || isCreating ? (
-                  <div className="space-y-4">
+                <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="businessName">Business Name</Label>
@@ -877,7 +877,7 @@ const SupplierDashboard: React.FC = () => {
                           onChange={(e) => setFormData({...formData, businessName: e.target.value})}
                           placeholder="Enter business name"
                         />
-                      </div>
+                        </div>
                       <div>
                         <Label htmlFor="businessType">Business Type</Label>
                         <Input
@@ -904,7 +904,7 @@ const SupplierDashboard: React.FC = () => {
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
                           placeholder="Enter phone number"
                         />
-                      </div>
+                    </div>
                     </div>
                     <div>
                       <Label htmlFor="productCategories">Product Categories (comma-separated)</Label>
@@ -928,26 +928,26 @@ const SupplierDashboard: React.FC = () => {
                           <X className="h-4 w-4 mr-2" />
                           Cancel
                         </Button>
-                      )}
-                    </div>
-                  </div>
+                  )}
+                </div>
+          </div>
                 ) : (
-                  <div className="space-y-4">
+                <div className="space-y-4">
                     {profile ? (
                       <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
+                        <div>
                             <Label className="text-sm font-medium text-gray-500">Business Name</Label>
                             <p className="text-lg font-semibold">{profile.businessName}</p>
                           </div>
                           <div>
                             <Label className="text-sm font-medium text-gray-500">Business Type</Label>
                             <p className="text-lg">{profile.businessType}</p>
-                          </div>
+                        </div>
                           <div>
                             <Label className="text-sm font-medium text-gray-500">Category</Label>
                             <p className="text-lg">{profile.category}</p>
-                          </div>
+                      </div>
                           <div>
                             <Label className="text-sm font-medium text-gray-500">Phone</Label>
                             <p className="text-lg flex items-center gap-2">
@@ -967,8 +967,8 @@ const SupplierDashboard: React.FC = () => {
                         <div>
                           <Label className="text-sm font-medium text-gray-500">Location</Label>
                           <LocationDisplay userRole="supplier" location={profile.location} onLocationUpdate={handleLocationUpdate} />
-                        </div>
-                        
+                      </div>
+
                         {/* Reviews Section */}
                         <div>
                           <Label className="text-sm font-medium text-gray-500">Reviews & Ratings</Label>
@@ -990,8 +990,8 @@ const SupplierDashboard: React.FC = () => {
                                     <span className="w-3 h-3 bg-red-500 rounded-full"></span>
                                     <span>{reviews.filter(r => !r.isTrusted).length} not trusted</span>
                                   </div>
-                                </div>
-                              )}
+                        </div>
+                      )}
                             </div>
                             
                             {/* Reviews List */}
@@ -1033,14 +1033,14 @@ const SupplierDashboard: React.FC = () => {
                                       {review.orderAmount && (
                                         <div className="text-right">
                                           <span className="text-xs text-gray-500">Order: ₹{review.orderAmount}</span>
-                                        </div>
-                                      )}
-                                    </div>
+                        </div>
+                      )}
+                    </div>
                                     
                                     {/* Review Comment */}
                                     <div className="mb-2">
                                       <p className="text-sm text-gray-600">{review.comment}</p>
-                                    </div>
+                    </div>
                                     
                                     {/* Review Footer */}
                                     <div className="flex items-center justify-between text-xs text-gray-400">
@@ -1053,16 +1053,16 @@ const SupplierDashboard: React.FC = () => {
                                   <p className="text-xs text-gray-500 text-center">
                                     Showing 5 of {reviews.length} reviews
                                   </p>
-                                )}
-                              </div>
+                  )}
+                </div>
                             ) : (
                               <div className="text-center py-4 text-gray-500">
                                 <Star className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                                 <p>No reviews yet</p>
-                              </div>
+          </div>
                             )}
-                          </div>
-                        </div>
+        </div>
+      </div>
                       </>
                     ) : (
                       <div className="text-center py-8">
@@ -1097,16 +1097,16 @@ const SupplierDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="materialName">Material Name</Label>
-                        <Input
+            <Input
                           id="materialName"
                           value={materialForm.name}
                           onChange={(e) => setMaterialForm({...materialForm, name: e.target.value})}
                           placeholder="Enter material name"
                         />
-                      </div>
+          </div>
                       <div>
                         <Label htmlFor="materialCategory">Category</Label>
-                        <Input
+              <Input
                           id="materialCategory"
                           value={materialForm.category}
                           onChange={(e) => setMaterialForm({...materialForm, category: e.target.value})}
@@ -1117,22 +1117,22 @@ const SupplierDashboard: React.FC = () => {
                         <Label htmlFor="materialPrice">Price</Label>
                         <Input
                           id="materialPrice"
-                          type="number"
+                type="number"
                           value={materialForm.price}
                           onChange={(e) => setMaterialForm({...materialForm, price: parseFloat(e.target.value)})}
                           placeholder="Enter price"
                         />
-                      </div>
+            </div>
                       <div>
                         <Label htmlFor="materialQuantity">Quantity</Label>
-                        <Input
+              <Input
                           id="materialQuantity"
-                          type="number"
+                type="number"
                           value={materialForm.quantity}
                           onChange={(e) => setMaterialForm({...materialForm, quantity: parseInt(e.target.value)})}
                           placeholder="Enter quantity"
                         />
-                      </div>
+            </div>
                       <div>
                         <Label htmlFor="materialUnit">Unit</Label>
                         <Input
@@ -1141,17 +1141,17 @@ const SupplierDashboard: React.FC = () => {
                           onChange={(e) => setMaterialForm({...materialForm, unit: e.target.value})}
                           placeholder="e.g., kg, tons, pieces"
                         />
-                      </div>
+          </div>
                       <div>
                         <Label htmlFor="materialMinOrder">Minimum Order Quantity</Label>
-                        <Input
+            <Input
                           id="materialMinOrder"
                           type="number"
                           value={materialForm.minimumOrderQuantity}
                           onChange={(e) => setMaterialForm({...materialForm, minimumOrderQuantity: parseInt(e.target.value)})}
                           placeholder="Enter minimum order quantity"
                         />
-                      </div>
+          </div>
                     </div>
                     <div>
                       <Label htmlFor="materialDescription">Description</Label>
@@ -1167,12 +1167,12 @@ const SupplierDashboard: React.FC = () => {
                       <Button onClick={handleAddMaterial}>
                         <Save className="h-4 w-4 mr-2" />
                         Add Material
-                      </Button>
+            </Button>
                       <Button onClick={() => setIsAddingMaterial(false)} variant="outline">
                         <X className="h-4 w-4 mr-2" />
-                        Cancel
-                      </Button>
-                    </div>
+              Cancel
+            </Button>
+          </div>
                   </div>
                 )}
 
@@ -1189,14 +1189,14 @@ const SupplierDashboard: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                 <Label>Material Name</Label>
-                                <Input
+            <Input
                                   value={materialForm.name}
                                   onChange={(e) => setMaterialForm({...materialForm, name: e.target.value})}
-                                />
-                              </div>
+            />
+          </div>
                               <div>
                                 <Label>Category</Label>
-                                <Input
+              <Input
                                   value={materialForm.category}
                                   onChange={(e) => setMaterialForm({...materialForm, category: e.target.value})}
                                 />
@@ -1204,20 +1204,20 @@ const SupplierDashboard: React.FC = () => {
                               <div>
                                 <Label>Price</Label>
                                 <Input
-                                  type="number"
+                type="number"
                                   value={materialForm.price}
                                   onChange={(e) => setMaterialForm({...materialForm, price: parseFloat(e.target.value)})}
                                 />
-                              </div>
+            </div>
                               <div>
                                 <Label>Quantity</Label>
-                                <Input
-                                  type="number"
+              <Input
+                type="number"
                                   value={materialForm.quantity}
                                   onChange={(e) => setMaterialForm({...materialForm, quantity: parseInt(e.target.value)})}
                                 />
-                              </div>
-                            </div>
+            </div>
+          </div>
                             <div>
                               <Label>Description</Label>
                               <Textarea
@@ -1332,7 +1332,7 @@ const SupplierDashboard: React.FC = () => {
                             {/* Order Items */}
                             <div className="mb-3">
                               <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
-                              <div className="space-y-2">
+          <div className="space-y-2">
                                 {order.items.map((item: any, index: number) => (
                                   <div key={index} className="flex justify-between text-sm">
                                     <span>{item.itemName} x {item.quantity} {item.unit}</span>
@@ -1340,7 +1340,7 @@ const SupplierDashboard: React.FC = () => {
                                   </div>
                                 ))}
                               </div>
-                            </div>
+          </div>
 
                             {/* Order Summary */}
                             <div className="flex items-center justify-between text-sm">
@@ -1364,16 +1364,16 @@ const SupplierDashboard: React.FC = () => {
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Approve Order
-                            </Button>
-                            <Button 
+            </Button>
+            <Button
                               onClick={() => handleRejectOrder(order._id)}
                               variant="destructive"
-                              className="flex-1"
-                            >
+              className="flex-1"
+            >
                               <X className="h-4 w-4 mr-2" />
                               Reject Order
-                            </Button>
-                          </div>
+            </Button>
+          </div>
                         )}
 
                         {/* Action Buttons for Paid Orders */}

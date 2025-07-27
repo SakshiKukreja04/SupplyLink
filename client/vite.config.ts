@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: process.env.VITE_API_URL || 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
       }
@@ -26,4 +26,25 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: mode === 'development',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          gsap: ['gsap'],
+          socket: ['socket.io-client']
+        }
+      },
+      external: []
+    }
+  },
+  define: {
+    'process.env': {}
+  },
+  optimizeDeps: {
+    include: ['socket.io-client']
+  }
 }));
