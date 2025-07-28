@@ -3,12 +3,23 @@ import { io, Socket } from 'socket.io-client';
 const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL ||
   import.meta.env.VITE_API_URL ||
-  'http://localhost:5000';
+  'wss://supplylink-ck4s.onrender.com';
 
 console.log('Environment variables:');
 console.log('VITE_SOCKET_URL:', import.meta.env.VITE_SOCKET_URL);
 console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
 console.log('Final SOCKET_URL:', SOCKET_URL);
+
+// Force production URL if in production environment
+if (import.meta.env.PROD) {
+  const productionUrl = 'wss://supplylink-ck4s.onrender.com';
+  console.log('Production mode detected, forcing URL to:', productionUrl);
+  // Override the SOCKET_URL for production
+  Object.defineProperty(window, 'SOCKET_URL_OVERRIDE', {
+    value: productionUrl,
+    writable: false
+  });
+}
 
 class SocketManager {
   private socket: Socket | null = null;
@@ -20,7 +31,11 @@ class SocketManager {
       return this.socket;
     }
 
-    this.socket = io(SOCKET_URL, {
+    // Use production URL override if available
+    const finalUrl = (window as any).SOCKET_URL_OVERRIDE || SOCKET_URL;
+    console.log('Connecting to socket with URL:', finalUrl);
+
+    this.socket = io(finalUrl, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,

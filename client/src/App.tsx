@@ -15,8 +15,12 @@ import SupplierDetails from "./pages/SupplierDetails";
 import VendorDashboard from "./pages/VendorDashboard";
 import VoiceSearchDemo from "./pages/VoiceSearchDemo";
 import NotFound from "./pages/NotFound";
+import { debugEnvironment } from "./utils/debug-env";
 
 const queryClient = new QueryClient();
+
+// Debug environment variables on app start
+debugEnvironment();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

@@ -119,7 +119,7 @@ const VoiceSearchWithAPI: React.FC<VoiceSearchWithAPIProps> = ({
   placeholder = "Search for products using voice commands...",
   className = "",
   disabled = false,
-  apiEndpoint = import.meta.env.VITE_API_URL + "/api/search" || "http://localhost:5000/api/search"
+  apiEndpoint = import.meta.env.VITE_API_URL + "/api/search" || "https://supplylink-ck4s.onrender.com/api/search"
 }) => {
   // State management
   const [isListening, setIsListening] = useState(false);

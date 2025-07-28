@@ -107,7 +107,7 @@ const VoiceSearchDemo: React.FC = () => {
                   onSearch={handleSearch}
                   placeholder="Try speaking continuously - it will send live updates"
                   enableWebSocket={isWebSocketEnabled}
-                  webSocketUrl={import.meta.env.VITE_SOCKET_URL || "ws://localhost:5000"}
+                  webSocketUrl={import.meta.env.VITE_SOCKET_URL || "wss://supplylink-ck4s.onrender.com"}
                 />
               </CardContent>
             </Card>

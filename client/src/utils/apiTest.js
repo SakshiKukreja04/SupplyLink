@@ -1,6 +1,6 @@
 // API Test Utility
 export const testBackendConnection = async () => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://supplylink-ck4s.onrender.com';
   
   try {
     console.log('🔍 Testing backend connection to:', apiUrl);
@@ -27,7 +27,7 @@ export const testBackendConnection = async () => {
 };
 
 export const testSocketConnection = async () => {
-  const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'wss://supplylink-ck4s.onrender.com';
   
   try {
     console.log('🔍 Testing socket connection to:', socketUrl);

@@ -42,7 +42,12 @@ export default defineConfig(({ mode }) => ({
     }
   },
   define: {
-    'process.env': {}
+    'process.env': {},
+    // Force production URLs in production builds
+    ...(mode === 'production' && {
+      'import.meta.env.VITE_SOCKET_URL': JSON.stringify('wss://supplylink-ck4s.onrender.com'),
+      'import.meta.env.VITE_API_URL': JSON.stringify('https://supplylink-ck4s.onrender.com')
+    })
   },
   optimizeDeps: {
     include: ['socket.io-client']
