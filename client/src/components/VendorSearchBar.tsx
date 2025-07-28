@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import VoiceSearchInput from './VoiceSearchInput';
+import { apiPost } from '@/utils/api';
 
 interface Supplier {
   _id: string;
@@ -90,16 +91,9 @@ const VendorSearchBar: React.FC<VendorSearchBarProps> = ({ onSearch, onLoading }
       const token = firebaseUser ? await firebaseUser.getIdToken() : null;
 
       // First, process the text through LibreTranslate for language detection and translation
-      const translationResponse = await fetch('/api/search/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          query: keyword.trim(),
-          language: 'auto'
-        })
+      const translationResponse = await apiPost('api/search/translate', {
+        query: keyword.trim(),
+        language: 'auto'
       });
 
       let processedKeyword = keyword.trim();
@@ -130,22 +124,17 @@ const VendorSearchBar: React.FC<VendorSearchBarProps> = ({ onSearch, onLoading }
       }
 
       // Now search for suppliers with the processed keyword
-      const response = await fetch('/api/vendors/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          keyword: processedKeyword,
-          originalKeyword: keyword.trim(),
-          lat: userLocation.lat,
-          lng: userLocation.lng,
-          maxDistance: filters.maxDistance,
-          minRating: filters.minRating,
-          verifiedOnly: filters.verifiedOnly,
-          translationInfo
-        })
+      const response = await apiPost('api/vendors/search', {
+        keyword: processedKeyword,
+        originalKeyword: keyword.trim(),
+        lat: userLocation.lat,
+        lng: userLocation.lng,
+        maxDistance: filters.maxDistance,
+        minRating: filters.minRating,
+        verifiedOnly: filters.verifiedOnly,
+        translationInfo
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {

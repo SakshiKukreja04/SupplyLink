@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { apiPost } from '@/utils/api';
 
 // TypeScript interfaces for Speech Recognition
 interface SpeechRecognition extends EventTarget {
@@ -127,15 +128,9 @@ const VoiceSearchInput: React.FC<VoiceSearchInputProps> = ({
       // First try backend translation endpoint
       try {
         console.log('🔄 Trying backend translation endpoint');
-        const backendResponse = await fetch('/api/search/translate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: text,
-            language: 'auto'
-          }),
+        const backendResponse = await apiPost('api/search/translate', {
+          query: text,
+          language: 'auto'
         });
 
         if (backendResponse.ok) {

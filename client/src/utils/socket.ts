@@ -24,7 +24,7 @@ if (import.meta.env.PROD) {
 class SocketManager {
   private socket: Socket | null = null;
   private isConnected: boolean = false;
-  private eventListeners: Map<string, Function> = new Map();
+  private eventListeners: Map<string, (...args: any[]) => void> = new Map();
 
   connect(userId: string, userRole: string): Socket {
     if (this.socket && this.isConnected) {
@@ -73,27 +73,27 @@ class SocketManager {
   }
 
   // Order events
-  onOrderRequestSent(callback: Function): void {
+  onOrderRequestSent(callback: (...args: any[]) => void): void {
     this.addListener('order_request_sent', callback);
   }
 
-  onOrderApproved(callback: Function): void {
+  onOrderApproved(callback: (...args: any[]) => void): void {
     this.addListener('order_approved', callback);
   }
 
-  onOrderRejected(callback: Function): void {
+  onOrderRejected(callback: (...args: any[]) => void): void {
     this.addListener('order_rejected', callback);
   }
 
-  onPaymentMade(callback: Function): void {
+  onPaymentMade(callback: (...args: any[]) => void): void {
     this.addListener('payment_made', callback);
   }
 
-  onOrderDispatched(callback: Function): void {
+  onOrderDispatched(callback: (...args: any[]) => void): void {
     this.addListener('order_dispatched', callback);
   }
 
-  onOrderDelivered(callback: Function): void {
+  onOrderDelivered(callback: (...args: any[]) => void): void {
     this.addListener('order_delivered', callback);
   }
 
@@ -127,12 +127,12 @@ class SocketManager {
     this.emit('supplier_response', data);
   }
 
-  onSupplierResponse(callback: Function): void {
+  onSupplierResponse(callback: (...args: any[]) => void): void {
     this.addListener('supplier_response', callback);
   }
 
   // Generic event handling
-  addListener(event: string, callback: Function): void {
+  addListener(event: string, callback: (...args: any[]) => void): void {
     if (!this.socket) {
       console.warn('Socket not connected. Cannot add listener for:', event);
       return;

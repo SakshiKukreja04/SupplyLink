@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import socketManager from '@/utils/socket';
+import { apiCall, apiGet, apiPost, apiPut, apiDelete } from '@/utils/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -316,10 +317,8 @@ const SupplierDashboard: React.FC = () => {
     setLoading(true);
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch('/api/suppliers/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiGet('api/suppliers/profile', {
+        'Authorization': `Bearer ${token}`
       });
       if (response.ok) {
         const data = await response.json();
@@ -357,10 +356,8 @@ const SupplierDashboard: React.FC = () => {
   const loadMaterials = async () => {
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch('/api/suppliers/materials', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiGet('api/suppliers/materials', {
+        'Authorization': `Bearer ${token}`
       });
       if (response.ok) {
         const data = await response.json();
@@ -374,10 +371,8 @@ const SupplierDashboard: React.FC = () => {
   const loadOrders = async () => {
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch('/api/orders/supplier', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiGet('api/orders/supplier', {
+        'Authorization': `Bearer ${token}`
       });
       if (response.ok) {
         const data = await response.json();
@@ -392,7 +387,7 @@ const SupplierDashboard: React.FC = () => {
     try {
       if (!profile?._id) return;
       
-      const response = await fetch(`/api/suppliers/${profile._id}/reviews`);
+      const response = await apiGet(`api/suppliers/${profile._id}/reviews`);
       
       if (response.ok) {
         const data = await response.json();
@@ -444,10 +439,9 @@ const SupplierDashboard: React.FC = () => {
       
       const token = await firebaseUser?.getIdToken();
       const method = profile ? 'PATCH' : 'POST';
-      const response = await fetch('/api/suppliers/profile', {
+      const response = await apiCall('api/suppliers/profile', {
         method,
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(cleanFormData)
@@ -497,22 +491,17 @@ const SupplierDashboard: React.FC = () => {
   const handleAddMaterial = async () => {
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch('/api/suppliers/materials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: materialForm.name,
-          description: materialForm.description,
-          price: materialForm.price,
-          quantity: materialForm.quantity,
-          unit: materialForm.unit,
-          category: materialForm.category,
-          minimumOrderQuantity: materialForm.minimumOrderQuantity,
-          deliveryTime: materialForm.deliveryTime
-        })
+      const response = await apiPost('api/suppliers/materials', {
+        name: materialForm.name,
+        description: materialForm.description,
+        price: materialForm.price,
+        quantity: materialForm.quantity,
+        unit: materialForm.unit,
+        category: materialForm.category,
+        minimumOrderQuantity: materialForm.minimumOrderQuantity,
+        deliveryTime: materialForm.deliveryTime
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       console.log('Response status:', response.status);
@@ -595,13 +584,8 @@ const SupplierDashboard: React.FC = () => {
       const material = materials.find(m => m._id === materialId);
       if (!material) return;
 
-      const response = await fetch(`/api/suppliers/materials/${materialId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(material)
+      const response = await apiPut(`api/suppliers/materials/${materialId}`, material, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {
@@ -660,11 +644,8 @@ const SupplierDashboard: React.FC = () => {
     
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch(`/api/suppliers/materials/${materialId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiDelete(`api/suppliers/materials/${materialId}`, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {
@@ -725,10 +706,9 @@ const SupplierDashboard: React.FC = () => {
   const handleApproveOrder = async (orderId: string, notes?: string) => {
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch(`/api/orders/${orderId}/approve`, {
+      const response = await apiCall(`api/orders/${orderId}/approve`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ notes })
@@ -757,10 +737,9 @@ const SupplierDashboard: React.FC = () => {
   const handleRejectOrder = async (orderId: string, reason?: string) => {
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch(`/api/orders/${orderId}/reject`, {
+      const response = await apiCall(`api/orders/${orderId}/reject`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ reason })
@@ -789,10 +768,9 @@ const SupplierDashboard: React.FC = () => {
   const handleDispatchOrder = async (orderId: string) => {
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch(`/api/orders/${orderId}/dispatch`, {
+      const response = await apiCall(`api/orders/${orderId}/dispatch`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       });

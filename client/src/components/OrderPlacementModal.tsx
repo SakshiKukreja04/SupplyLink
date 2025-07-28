@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { apiPost } from '@/utils/api';
 
 interface SupplierItem {
   _id: string;
@@ -161,20 +162,15 @@ const OrderPlacementModal: React.FC<OrderPlacementModalProps> = ({
 
     try {
       const token = await firebaseUser?.getIdToken();
-      const response = await fetch('/api/orders/place', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          supplierId: supplier._id,
-          items: selectedItems,
-          deliveryAddress,
-          deliveryInstructions,
-          notes,
-          isUrgent
-        })
+      const response = await apiPost('api/orders/place', {
+        supplierId: supplier._id,
+        items: selectedItems,
+        deliveryAddress,
+        deliveryInstructions,
+        notes,
+        isUrgent
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {

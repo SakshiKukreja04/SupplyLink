@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import socketManager from '@/utils/socket';
+import { apiGet, apiPost } from '@/utils/api';
 
 interface Material {
   _id: string;
@@ -113,7 +114,7 @@ const SupplierDetailsModal: React.FC<SupplierDetailsModalProps> = ({
   useEffect(() => {
     if (!supplier) return;
 
-    const socket = socketManager.connect();
+    const socket = socketManager.connect(firebaseUser?.uid || '', 'vendor');
     
     // Listen for new reviews
     socket.on('review_submitted', (data: any) => {
@@ -167,10 +168,8 @@ const SupplierDetailsModal: React.FC<SupplierDetailsModalProps> = ({
       const token = await firebaseUser.getIdToken();
       
       // Load materials
-      const materialsResponse = await fetch(`/api/suppliers/${supplier._id}/materials`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const materialsResponse = await apiGet(`api/suppliers/${supplier._id}/materials`, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (materialsResponse.ok) {
@@ -180,7 +179,7 @@ const SupplierDetailsModal: React.FC<SupplierDetailsModalProps> = ({
 
       // Load reviews from the new API endpoint
       try {
-        const reviewsResponse = await fetch(`/api/suppliers/${supplier._id}/reviews`);
+        const reviewsResponse = await apiGet(`api/suppliers/${supplier._id}/reviews`);
 
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
@@ -292,23 +291,18 @@ const SupplierDetailsModal: React.FC<SupplierDetailsModalProps> = ({
 
       const token = await firebaseUser.getIdToken();
 
-      const response = await fetch('/api/orders/place', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          supplierId: supplier._id,
-          items: cart.map(item => ({
-            itemId: item.materialId,
-            itemName: item.name,
-            quantity: item.quantity
-          })),
-          deliveryAddress,
-          deliveryInstructions,
-          notes: `Custom order from ${supplier.businessName}`
-        })
+      const response = await apiPost('api/orders/place', {
+        supplierId: supplier._id,
+        items: cart.map(item => ({
+          itemId: item.materialId,
+          itemName: item.name,
+          quantity: item.quantity
+        })),
+        deliveryAddress,
+        deliveryInstructions,
+        notes: `Custom order from ${supplier.businessName}`
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {

@@ -151,7 +151,7 @@ const SignUp: React.FC = () => {
           // Get supplier _id from localStorage or backend (assumes signup sets it)
           const user = JSON.parse(localStorage.getItem('user') || '{}');
           if (user && user.uid) {
-            await fetch('/api/suppliers/location', {
+            await fetch(`${import.meta.env.VITE_API_URL || 'https://supplylink-ck4s.onrender.com'}/api/suppliers/location`, {
               method: 'PATCH',
               headers: { 
                 'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiPost } from '@/utils/api';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -86,19 +87,14 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
       const token = await firebaseUser.getIdToken();
       
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          supplierId,
-          orderId,
-          rating,
-          isTrusted,
-          comment: comment.trim()
-        })
+      const response = await apiPost('api/reviews', {
+        supplierId,
+        orderId,
+        rating,
+        isTrusted,
+        comment: comment.trim()
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       const data = await response.json();

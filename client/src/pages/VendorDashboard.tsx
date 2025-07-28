@@ -18,6 +18,7 @@ import NearbySuppliersMap from '@/components/NearbySuppliersMap';
 import ReviewModal from '@/components/ReviewModal';
 import socketManager from '@/utils/socket';
 import { initAnimations, cleanupAnimations } from '@/lib/gsap';
+import { apiGet, apiPost, apiCall, apiPut, apiDelete } from '@/utils/api';
 
 interface Supplier {
   _id: string;
@@ -201,10 +202,8 @@ const VendorDashboard: React.FC = () => {
 
       const token = await firebaseUser.getIdToken();
 
-      const response = await fetch('/api/vendors/orders', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiGet('api/vendors/orders', {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {
@@ -219,7 +218,7 @@ const VendorDashboard: React.FC = () => {
   // Function to fetch updated rating for a specific supplier
   const fetchUpdatedSupplierRating = useCallback(async (supplierId: string) => {
     try {
-      const response = await fetch(`/api/suppliers/${supplierId}/reviews`);
+      const response = await apiGet(`api/suppliers/${supplierId}/reviews`);
       
       if (response.ok) {
         const reviewsData = await response.json();
@@ -319,19 +318,14 @@ const VendorDashboard: React.FC = () => {
 
       // Place orders for each supplier
       for (const order of orderData.orders) {
-        const response = await fetch('/api/vendors/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            supplierId: order.supplierId,
-            items: order.items,
-            deliveryAddress: orderData.deliveryAddress,
-            deliveryInstructions: orderData.deliveryInstructions,
-            paymentMethod: orderData.paymentMethod
-          })
+        const response = await apiPost('api/vendors/orders', {
+          supplierId: order.supplierId,
+          items: order.items,
+          deliveryAddress: orderData.deliveryAddress,
+          deliveryInstructions: orderData.deliveryInstructions,
+          paymentMethod: orderData.paymentMethod
+        }, {
+          'Authorization': `Bearer ${token}`
         });
 
         if (!response.ok) {
@@ -393,18 +387,13 @@ const VendorDashboard: React.FC = () => {
       const token = await firebaseUser.getIdToken();
 
       // Create Razorpay order
-      const createOrderResponse = await fetch('/api/payments/create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          amount: order.totalAmount,
-          orderId: order._id,
-          vendorId: user?.id,
-          supplierId: order.supplierId
-        })
+      const createOrderResponse = await apiPost('api/payments/create-order', {
+        amount: order.totalAmount,
+        orderId: order._id,
+        vendorId: user?.id,
+        supplierId: order.supplierId
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (!createOrderResponse.ok) {
@@ -451,19 +440,14 @@ const VendorDashboard: React.FC = () => {
         handler: async function (response: any) {
           try {
             // Verify payment on backend
-            const verifyResponse = await fetch('/api/payments/verify', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
-                orderId: order._id,
-                amount: order.totalAmount
-              })
+            const verifyResponse = await apiPost('api/payments/verify', {
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              orderId: order._id,
+              amount: order.totalAmount
+            }, {
+              'Authorization': `Bearer ${token}`
             });
 
             if (verifyResponse.ok) {

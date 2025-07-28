@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiGet, apiPost } from '@/utils/api';
 
 interface Material {
   _id: string;
@@ -94,10 +95,8 @@ const SupplierMaterialsModal: React.FC<SupplierMaterialsModalProps> = ({
       }
 
       const token = await firebaseUser.getIdToken();
-      const response = await fetch(`/api/suppliers/${supplier._id}/materials`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiGet(`api/suppliers/${supplier._id}/materials`, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {
@@ -186,23 +185,18 @@ const SupplierMaterialsModal: React.FC<SupplierMaterialsModalProps> = ({
 
       const token = await firebaseUser.getIdToken();
 
-      const response = await fetch('/api/orders/place', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          supplierId: supplier._id,
-          items: cart.map(item => ({
-            itemId: item.materialId,
-            itemName: item.name,
-            quantity: item.quantity
-          })),
-          deliveryAddress,
-          deliveryInstructions,
-          notes: `Order placed from ${supplier.businessName}`
-        })
+      const response = await apiPost('api/orders/place', {
+        supplierId: supplier._id,
+        items: cart.map(item => ({
+          itemId: item.materialId,
+          itemName: item.name,
+          quantity: item.quantity
+        })),
+        deliveryAddress,
+        deliveryInstructions,
+        notes: `Order placed from ${supplier.businessName}`
+      }, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {

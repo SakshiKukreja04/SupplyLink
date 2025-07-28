@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { apiCall } from '@/utils/api';
 
 interface LocationDisplayProps {
   userRole: 'vendor' | 'supplier';
@@ -87,11 +88,10 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({ userRole, location: p
           try {
             if (firebaseUser) {
               const token = await firebaseUser.getIdToken();
-              const endpoint = userRole === 'supplier' ? '/api/suppliers/location' : '/api/vendors/location';
-              const response = await fetch(endpoint, {
+              const endpoint = userRole === 'supplier' ? 'api/suppliers/location' : 'api/vendors/location';
+              const response = await apiCall(endpoint, {
                 method: 'PATCH',
                 headers: { 
-                  'Content-Type': 'application/json',
                   'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(locationData)
@@ -136,11 +136,10 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({ userRole, location: p
           try {
             if (firebaseUser) {
               const token = await firebaseUser.getIdToken();
-              const endpoint = userRole === 'supplier' ? '/api/suppliers/location' : '/api/vendors/location';
-              const response = await fetch(endpoint, {
+              const endpoint = userRole === 'supplier' ? 'api/suppliers/location' : 'api/vendors/location';
+              const response = await apiCall(endpoint, {
                 method: 'PATCH',
                 headers: { 
-                  'Content-Type': 'application/json',
                   'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(locationData)
@@ -188,67 +187,57 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({ userRole, location: p
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-blue-600" />
-          Your Location
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MapPin className="h-5 w-5" />
+          Location
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {loading && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <RefreshCw className="w-4 h-4 animate-spin" />
-            Getting your location...
+      <CardContent className="space-y-4">
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <RefreshCw className="h-6 w-6 animate-spin" />
+            <span className="ml-2">Getting your location...</span>
           </div>
-        )}
-
-        {error && (
-          <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-            {error}
+        ) : error ? (
+          <div className="text-center py-4">
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={getCurrentLocation} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
           </div>
-        )}
-
-        {location && (
-          <div className="space-y-2">
-            <div className="text-sm">
-              <span className="font-medium">Coordinates:</span>
-              <div className="text-muted-foreground">
-                {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+        ) : location ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Current Location</p>
+                <p className="text-sm text-gray-600">
+                  {address || `${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`}
+                </p>
+              </div>
+              <Button onClick={getCurrentLocation} size="sm" variant="outline">
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="font-medium">Latitude:</span> {location.lat.toFixed(6)}
+              </div>
+              <div>
+                <span className="font-medium">Longitude:</span> {location.lng.toFixed(6)}
               </div>
             </div>
-            
-            {address && (
-              <div className="text-sm">
-                <span className="font-medium">Address:</span>
-                <div className="text-muted-foreground">{address}</div>
-              </div>
-            )}
-
-            <div className="text-xs text-muted-foreground">
-              This location helps {userRole === 'vendor' ? 'suppliers find you' : 'vendors find you'} for better service.
-            </div>
+          </div>
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-gray-600 mb-4">Location not available</p>
+            <Button onClick={getCurrentLocation}>
+              <MapPin className="h-4 w-4 mr-2" />
+              Get Location
+            </Button>
           </div>
         )}
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={getCurrentLocation}
-          disabled={loading}
-          className="w-full"
-        >
-          {loading ? (
-            <>
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              Updating...
-            </>
-          ) : (
-            <>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Update Location
-            </>
-          )}
-        </Button>
       </CardContent>
     </Card>
   );

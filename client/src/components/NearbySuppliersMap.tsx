@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import OrderPlacementModal from './OrderPlacementModal';
 import socketManager from '@/utils/socket';
+import { apiGet } from '@/utils/api';
 
 interface Supplier {
   _id: string;
@@ -87,10 +88,8 @@ const NearbySuppliersMap: React.FC<NearbySuppliersMapProps> = ({ onSupplierSelec
 
     try {
       const token = await firebaseUser.getIdToken();
-      const response = await fetch(`/api/suppliers/nearby?vendorId=${firebaseUser.uid}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await apiGet(`api/suppliers/nearby?vendorId=${firebaseUser.uid}`, {
+        'Authorization': `Bearer ${token}`
       });
 
       if (response.ok) {
@@ -133,7 +132,7 @@ const NearbySuppliersMap: React.FC<NearbySuppliersMapProps> = ({ onSupplierSelec
   // Function to fetch updated rating for a specific supplier
   const fetchUpdatedSupplierRating = useCallback(async (supplierId: string) => {
     try {
-      const response = await fetch(`/api/suppliers/${supplierId}/reviews`);
+      const response = await apiGet(`api/suppliers/${supplierId}/reviews`);
       
       if (response.ok) {
         const reviewsData = await response.json();
@@ -197,7 +196,7 @@ const NearbySuppliersMap: React.FC<NearbySuppliersMapProps> = ({ onSupplierSelec
 
   // Socket listener for real-time rating updates
   useEffect(() => {
-    const socket = socketManager.connect();
+    const socket = socketManager.connect(firebaseUser?.uid || '', 'vendor');
     
     // Listen for new reviews to update supplier ratings
     socket.on('review_submitted', (data: any) => {
