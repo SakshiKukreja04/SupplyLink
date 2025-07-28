@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "cd client && npm run dev",
     "build": "cd client && npm run build",
-    "start": "cd client && npm run preview"
+    "start": "cd client && npm run preview",
+    "install:client": "cd client && npm install --legacy-peer-deps",
+    "build:client": "cd client && npm run build"
   },
   "engines": {
     "node": ">=18.0.0"
