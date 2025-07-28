@@ -5,7 +5,10 @@ const SOCKET_URL =
   import.meta.env.VITE_API_URL ||
   'http://localhost:5000';
 
-console.log('Connecting to socket at:', SOCKET_URL);
+console.log('Environment variables:');
+console.log('VITE_SOCKET_URL:', import.meta.env.VITE_SOCKET_URL);
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('Final SOCKET_URL:', SOCKET_URL);
 
 class SocketManager {
   constructor() {

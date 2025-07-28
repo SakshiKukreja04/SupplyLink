@@ -70,7 +70,7 @@ const VoiceSearch: React.FC<VoiceSearchProps> = ({
   placeholder = "Search products by voice...",
   className = "",
   enableWebSocket = false,
-  webSocketUrl = "ws://localhost:5000"
+  webSocketUrl = import.meta.env.VITE_SOCKET_URL || "ws://localhost:5000"
 }) => {
   // State management
   const [isListening, setIsListening] = useState(false);

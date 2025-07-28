@@ -27,7 +27,7 @@ export const testBackendConnection = async () => {
 };
 
 export const testSocketConnection = async () => {
-  const socketUrl = import.meta.env.VITE_SERVER_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
   
   try {
     console.log('🔍 Testing socket connection to:', socketUrl);
